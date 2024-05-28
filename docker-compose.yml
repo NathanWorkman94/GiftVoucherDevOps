@@ -4,7 +4,11 @@ services:
   giftvoucher:
     image: giftvoucher:latest
     environment:
-      - OUTPUT_DIR=/app/Downloads
+      - OUTPUT_DIR=/app/Output
     volumes:
-      - C:/Users/natha/Downloads:/app/Downloads
+      - gift_voucher_output:/app/Output
     command: python main.py
+
+volumes:
+  gift_voucher_output:
+    external: true

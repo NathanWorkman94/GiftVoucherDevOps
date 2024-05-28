@@ -3,7 +3,7 @@ import os
 import datetime
 
 # Get the output directory from an environment variable
-output_dir = os.getenv('OUTPUT_DIR', os.path.join(os.path.expanduser('~'), 'Downloads'))
+output_dir = os.getenv('OUTPUT_DIR', '/app/Output')
 
 font_path_location = os.path.join(os.path.dirname(__file__), "Fonts", "OpenSans-Regular.ttf")
 bold_font_path_location = os.path.join(os.path.dirname(__file__), "Fonts", "OpenSans-Bold.ttf")
