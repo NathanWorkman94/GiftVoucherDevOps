@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  giftvoucher:
+    image: giftvoucher:latest
+    environment:
+      - OUTPUT_DIR=/app/Downloads
+    volumes:
+      - C:\Users\natha\Downloads:/app/Downloads
+    command: python main.py
