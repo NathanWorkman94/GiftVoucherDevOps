@@ -6,5 +6,5 @@ services:
     environment:
       - OUTPUT_DIR=/app/Downloads
     volumes:
-      - C:\Users\natha\Downloads:/app/Downloads
+      - C:/Users/natha/Downloads:/app/Downloads
     command: python main.py
