@@ -1,174 +1,120 @@
-import tkinter as tk
-from tkinter import ttk, messagebox, filedialog
-from gv_designer import process_voucher
+from PIL import Image, ImageDraw, ImageFont
 import os
+import datetime
 
-# Get the input details and call the voucher creation function
-def create_voucher():
-    order_number = entry_order.get().strip()
-    reference_number = entry_reference.get().strip()
-    pin = entry_pin.get().strip()
-    value = entry_value.get().strip()
-    website = store_var.get().strip()
-    message = entry_message_var.get().strip()
-    save_directory = save_dir_var.get().strip()
+font_path_location = os.path.join(os.path.dirname(__file__), "Fonts", "OpenSans-Regular.ttf")
+bold_font_path_location = os.path.join(os.path.dirname(__file__), "Fonts", "OpenSans-Bold.ttf")
+italic_font_path_location = os.path.join(os.path.dirname(__file__), "Fonts", "OpenSans-Italic.ttf")
 
-    if not order_number:
-        messagebox.showerror("Error", "Order Number is required.")
-        return
+def calculate_font_size(text, max_size=70, threshold=46, reduction_factor=1):
+    """
+    Calculate the font size based on the length of the text.
+    param reduction_factor: How much to reduce the size per character over the threshold.
+    return: The calculated font size.
+    """
+    if len(text) > threshold:
+        return max(max_size - ((len(text) - threshold) * reduction_factor), 12)  # 12 is the minimum size
+    return max_size
 
-    if not reference_number:
-        messagebox.showerror("Error", "Reference Number is required.")
-        return
-
-    if not pin:
-        messagebox.showerror("Error", "Pin is required.")
-        return
-
-    if not value:
-        messagebox.showerror("Error", "Value is required.")
-        return
-
-    if not website:
-        messagebox.showerror("Error", "Store is required.")
-        return
-
-    if not save_directory:
-        save_directory = os.path.join(os.path.expanduser('~'), 'Downloads') # Default to Downloads folder
-
-    if len(message) > 40:
-        messagebox.showerror("Error", "Message is too long. Please limit it to 40 characters.")
-        return
-
+def create_gift_card(background_path, texts_positions, directory, file_name, font_path=font_path_location, default_font_size=70):
+    """
+    Creates gift card png
+    :param background_path: Path to the background image.
+    :param texts_positions: List of tuples (text, position, font_size) for each text to be placed.
+    :param directory: Directory where the image will be saved.
+    :param font_path: Path to a .ttf font file (optional, defaults to 'arial.ttf').
+    :param default_font_size: Default size of the text font.
+    """
     try:
-        value = float(value)
-    except ValueError:
-        messagebox.showerror("Error", "Value must be a number.")
-        return
+        output_path = os.path.join(directory, file_name + ".png")
+        print(f"Creating gift card at: {output_path}")
 
-    # Create the voucher
-    process_voucher(order_number, reference_number, pin, value, website, message, save_directory)
-    
-    # Inform the user that the voucher has been created and will appear in the selected folder
-    messagebox.showinfo("Success", f"Voucher created successfully!\n\nThe voucher will appear in your selected folder ({save_directory}).")
-    
-    # Clear all the input fields for the next entry
-    entry_order.delete(0, tk.END)
-    entry_reference.delete(0, tk.END)
-    entry_pin.delete(0, tk.END)
-    entry_value.delete(0, tk.END)
-    entry_store.set('Mannys')
-    entry_message_var.set("")
-    save_dir_var.set("")
+        with Image.open(background_path) as img:
+            draw = ImageDraw.Draw(img)
 
-    # Set focus back to the first text box
-    entry_order.focus_set()
+            for text, position, font_size, font_path in texts_positions:
+                font = ImageFont.truetype(font_path, font_size)
+                draw.text(position, text, font=font, fill=(255, 255, 255))
 
-# Function to browse and select a directory
-def browse_directory():
-    directory = filedialog.askdirectory()
-    if directory:
-        save_dir_var.set(directory)
+            img.save(output_path)
+        print("Gift card created successfully")
 
-# Function to exit the application
-def exit_application():
-    root.destroy()
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
-# Function to limit the message length and update character count
-def limit_message_length(*args):
-    current_length = len(entry_message_var.get())
-    if current_length > 40:
-        entry_message_var.set(entry_message_var.get()[:40])
-    char_count_label.config(text=f"{min(current_length, 40)}/40")
+def process_voucher(order, reference, pin, value, website, message, save_directory):
+    """
+    Processes the voucher creation based on the provided details.
+    """
+    background_path = os.path.join(os.path.dirname(__file__), "background.png")
+    mannys_background_path = os.path.join(os.path.dirname(__file__), "mannys_background.png")
+    sdj_background_path = os.path.join(os.path.dirname(__file__), "sdj_background.png")
 
-# Set up the main window
-root = tk.Tk()
-root.title("Gift Voucher Creator")
-root.configure(bg='#f0f0f0')
+    value_font_size = 180                   # Font size for the 'Value' text
+    default_font_size = 70                  # Font size for other text
+    default_value_position = (1320, 75)     # Default position for two digits in Value text
+    shift_per_extra_digit = 60              # Pixels to shift left for each extra digit
+    message_position = (180, 863)
 
-# Create and apply styles
-style = ttk.Style()
-style.theme_use('clam')
+    # Calculate the expiry date
+    current_date = datetime.datetime.now()
+    expiry_date = current_date + datetime.timedelta(days=3*365)  # 3 years
+    formatted_expiry_date = expiry_date.strftime('%d/%m/%Y')
+    expiry_position = (990, 566)
 
-# Frame style
-style.configure('Custom.TFrame', background='#f0f0f0')
-
-# Label style
-style.configure('Custom.TLabel', background='#f0f0f0')
-
-# Button style
-style.configure('Custom.TButton', background='#d6e0f5', foreground='black', font=('Helvetica', 10, 'bold'))
-
-# Create a frame for the input fields
-frame = ttk.Frame(root, padding="10", style='Custom.TFrame')
-frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S), padx=10, pady=10)
-frame.configure(relief="solid", borderwidth=1)
-
-# Create input fields with labels aligned to the left
-labels = ["Order Number:", "Reference Number:", "Pin:", "Value:", "Store:", "Message:", "Save Directory:"]
-entries = []
-
-for i, label_text in enumerate(labels):
-    label = ttk.Label(frame, text=label_text, anchor="w", style='Custom.TLabel')
-    label.grid(row=i, column=0, sticky=tk.W, padx=5, pady=5)
-
-    if label_text == "Store:":
-        store_var = tk.StringVar(value='Mannys')
-        entry = ttk.Combobox(frame, textvariable=store_var)
-        entry['values'] = ('Store DJ', 'Mannys')
-        entry.grid(row=i, column=1, padx=5, pady=5, sticky=(tk.W, tk.E))
-        entries.append(entry)
-    elif label_text == "Save Directory:":
-        save_dir_var = tk.StringVar()
-        entry = ttk.Entry(frame, textvariable=save_dir_var)
-        entry.grid(row=i, column=1, padx=5, pady=5, sticky=(tk.W, tk.E))
-        browse_button = ttk.Button(frame, text="Browse", command=browse_directory)
-        browse_button.grid(row=i, column=2, padx=5, pady=5)
-        entries.append(entry)
-    elif label_text == "Message:":
-        entry_message_var = tk.StringVar()
-        entry_message_var.trace('w', limit_message_length)
-        entry = ttk.Entry(frame, textvariable=entry_message_var)
-        entry.grid(row=i, column=1, padx=5, pady=5, sticky=(tk.W, tk.E))
-        entries.append(entry)
+    # Check the "Website" and set the background path
+    if website == 'Mannys':
+        background_path = mannys_background_path
+    elif website == 'Store DJ':
+        background_path = sdj_background_path
     else:
-        entry = ttk.Entry(frame)
-        entry.grid(row=i, column=1, padx=5, pady=5, sticky=(tk.W, tk.E))
-        entries.append(entry)
+        background_path = mannys_background_path  # Default background
 
-entry_order, entry_reference, entry_pin, entry_value, entry_store, entry_message, entry_save_dir = entries
+    texts_positions = [
+        ('Order: ' + str(order), (180, 566), default_font_size, font_path_location),
+        ('Reference: ' + str(reference), (180, 716), default_font_size, font_path_location),
+        ('Pin: ' + str(pin), (1300, 716), default_font_size, font_path_location)
+    ]
+    
+    # Prepare the 'Value' text
+    if isinstance(value, int) or value.is_integer():
+        value_text = f'${int(value)}'
+    else:
+        value_text = f'${value}'
 
-# Message label to inform about character limit and show character count
-char_limit_message = tk.Label(frame, text="(Max 40 characters)", bg='#f0f0f0', fg='grey')
-char_limit_message.grid(row=5, column=2, sticky=tk.W, padx=5, pady=5)
+    num_digits = len(value_text) - 1  # Subtract 1 for the '$' character
 
-char_count_label = tk.Label(frame, text="0/40", bg='#f0f0f0', fg='grey')
-char_count_label.grid(row=5, column=3, sticky=tk.W, padx=5, pady=5)
+    # Calculate the new position
+    value_position_x = default_value_position[0] - shift_per_extra_digit * max(0, num_digits - 2)
+    value_position = (value_position_x, default_value_position[1])
 
-# Default save location message
-default_message = tk.Label(root, text="If no location is selected, the file will be saved to your Downloads folder.", bg='#f0f0f0', fg='black')
-default_message.grid(row=1, column=0, pady=(0, 10))
+    expiry_text = f'Expiry: {formatted_expiry_date}'
+    texts_positions.append((expiry_text, expiry_position, default_font_size, font_path_location))
 
-# Create buttons
-button_frame = ttk.Frame(root, style='Custom.TFrame')
-button_frame.grid(row=2, column=0, pady=10, padx=10)
+    # Add the 'Value' text with the new position to texts_positions
+    texts_positions.append((value_text, value_position, value_font_size, bold_font_path_location))
 
-# Note: Swapped positions of the buttons
-exit_button = ttk.Button(button_frame, text="Exit", command=exit_application, style='Custom.TButton')
-exit_button.grid(row=0, column=0, padx=5, pady=5)
+    # Check if there's a non-empty message after conversion and stripping
+    if message and message.strip() != 'nan':
+        full_message = message.strip()
+        texts_positions.append((full_message, message_position, default_font_size, italic_font_path_location))
 
-create_button = ttk.Button(button_frame, text="Create Voucher", command=create_voucher, style='Custom.TButton')
-create_button.grid(row=0, column=1, padx=5, pady=5)
+    # Generate file name based on the order number
+    if isinstance(value, int) or value.is_integer():
+        file_name = f"{website} Gift Voucher - {order} ${int(value)}"
+    else:
+        file_name = f"{website} Gift Voucher - {order} ${value}"
 
-# Configure grid to make entries expand to fill available space
-for i in range(len(labels)):
-    frame.columnconfigure(i, weight=1)
-    frame.rowconfigure(i, weight=1)
+    create_gift_card(background_path, texts_positions, save_directory, file_name)
 
-root.columnconfigure(0, weight=1)
-root.rowconfigure(0, weight=1)
-
-# Set the focus to the first text box when the GUI pops up
-entry_order.focus_set()
-
-root.mainloop()
+# Manual test for process_voucher
+if __name__ == "__main__":
+    output_dir = os.path.join(os.path.expanduser('~'), 'Downloads')
+    process_voucher('1234567', '123456', '1234', 100, 'Mannys', 'Testing!', output_dir)
+    output_file = os.path.join(output_dir, 'Mannys Gift Voucher - 1234567 $100.png')
+    assert os.path.exists(output_file)
+    print(f"Checking if file exists at: {output_file}")
+    if os.path.exists(output_file):
+        print(f"Test completed. Voucher created at: {output_file}")
+    else:
+        print(f"File not found at: {output_file}")
