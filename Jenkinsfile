@@ -5,15 +5,16 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building...'
-                // Install dependencies using pip
-                bat 'pip install -r requirements.txt'
+                
+                // Build the Docker image
+                bat 'docker build -t giftvoucher:latest .'
             }
         }
         
         stage('Test') {
             steps {
                 echo 'Testing...'
-                // Run the main.py script which includes the test
+                // Run the main.py script which includes test
                 bat 'python main.py'
             }
         }
@@ -21,7 +22,14 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying...'
-                // Add your deploy steps here
+                // Add deploy steps here
+            }
+        }
+
+        stage('Release') {
+            steps {
+                echo 'Releasing...'
+                // Add Release steps here
             }
         }
     }
