@@ -13,15 +13,15 @@ pipeline {
         stage('Test') {
             steps {
                 echo 'Testing...'
-                // Run tests using pytest
-                bat 'pytest tests'
+                // Run the main.py script which includes the test
+                bat 'python main.py'
             }
         }
         
         stage('Deploy') {
             steps {
                 echo 'Deploying...'
-                // Add deploy steps here
+                // Add your deploy steps here
             }
         }
     }
@@ -29,7 +29,7 @@ pipeline {
     post {
         always {
             echo 'Cleaning up...'
-            // Add cleanup steps here
+            // Add any cleanup steps here
         }
         success {
             echo 'Pipeline succeeded!'
