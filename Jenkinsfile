@@ -45,7 +45,7 @@ pipeline {
                     def hostPath = "C:/Users/natha/Documents/Deakin/Trimester 2/SIT223 - Professional Practice in Information Technology/6.2HD Create your DevOps Pipeline/Output"
                     
                     // Copy the file from the container to the host machine
-                    sh "docker cp ${containerId}:${containerPath}/Mannys\\ Gift\\ Voucher\\ -\\ 1234567\\ \\$100.png ${hostPath}"
+                    sh "docker cp ${containerId}:${containerPath}/'Mannys Gift Voucher - 1234567 \$100.png' ${hostPath}"
                 }
             }
         }
