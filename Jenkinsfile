@@ -11,6 +11,9 @@ pipeline {
         
         stage('Test') {
             steps {
+                echo 'Removing any existing container named giftvoucher_test...'
+                bat 'docker rm -f giftvoucher_test || true'
+                
                 echo 'Testing...'
                 bat 'docker run --name giftvoucher_test giftvoucher:latest'
             }
