@@ -23,7 +23,7 @@ pipeline {
                     // Define the paths
                     def containerPath = "/app/Output"
                     def hostPath = "C:/Users/natha/Documents/Deakin/Trimester 2/SIT223 - Professional Practice in Information Technology/6.2HD Create your DevOps Pipeline/Output"
-                    def fileName = "Mannys Gift Voucher - 1234567 $100.png"
+                    def fileName = "Mannys Gift Voucher - 1234567 \$100.png"
                     
                     // Use double quotes around the entire paths to handle special characters properly
                     bat "docker cp \"giftvoucher_test:${containerPath}/${fileName}\" \"${hostPath}\""
