@@ -2,6 +2,9 @@ from PIL import Image, ImageDraw, ImageFont
 import os
 import datetime
 
+# Get the output directory from an environment variable
+output_dir = os.getenv('OUTPUT_DIR', os.path.join(os.path.expanduser('~'), 'Downloads'))
+
 font_path_location = os.path.join(os.path.dirname(__file__), "Fonts", "OpenSans-Regular.ttf")
 bold_font_path_location = os.path.join(os.path.dirname(__file__), "Fonts", "OpenSans-Bold.ttf")
 italic_font_path_location = os.path.join(os.path.dirname(__file__), "Fonts", "OpenSans-Italic.ttf")
@@ -42,7 +45,7 @@ def create_gift_card(background_path, texts_positions, directory, file_name, fon
     except Exception as e:
         print(f"An error occurred: {e}")
 
-def process_voucher(order, reference, pin, value, website, message, save_directory):
+def process_voucher(order, reference, pin, value, website, message, output_dir):
     """
     Processes the voucher creation based on the provided details.
     """
@@ -105,11 +108,10 @@ def process_voucher(order, reference, pin, value, website, message, save_directo
     else:
         file_name = f"{website} Gift Voucher - {order} ${value}"
 
-    create_gift_card(background_path, texts_positions, save_directory, file_name)
+    create_gift_card(background_path, texts_positions, output_dir, file_name)
 
 # Manual test for process_voucher
 if __name__ == "__main__":
-    output_dir = os.path.join(os.path.expanduser('~'), 'Downloads')
     process_voucher('1234567', '123456', '1234', 100, 'Mannys', 'Testing!', output_dir)
     output_file = os.path.join(output_dir, 'Mannys Gift Voucher - 1234567 $100.png')
     assert os.path.exists(output_file)
