@@ -5,6 +5,9 @@ import datetime
 # Get the output directory from an environment variable
 output_dir = os.getenv('OUTPUT_DIR', '/app/Output')
 
+# Ensure the output directory exists
+os.makedirs(output_dir, exist_ok=True)
+
 font_path_location = os.path.join(os.path.dirname(__file__), "Fonts", "OpenSans-Regular.ttf")
 bold_font_path_location = os.path.join(os.path.dirname(__file__), "Fonts", "OpenSans-Bold.ttf")
 italic_font_path_location = os.path.join(os.path.dirname(__file__), "Fonts", "OpenSans-Italic.ttf")
