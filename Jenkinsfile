@@ -5,24 +5,23 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building...'
-                // Install dependencies
-                sh 'pip install -r requirements.txt'
-                // Run backend tests
-                sh 'pytest tests'
+                // Install dependencies using pip
+                bat 'pip install -r requirements.txt'
             }
         }
         
         stage('Test') {
             steps {
                 echo 'Testing...'
-                // Run additional tests if necessary
+                // Run tests using pytest
+                bat 'pytest tests'
             }
         }
         
         stage('Deploy') {
             steps {
                 echo 'Deploying...'
-                // Add your deploy steps here
+                // Add deploy steps here
             }
         }
     }
@@ -30,7 +29,13 @@ pipeline {
     post {
         always {
             echo 'Cleaning up...'
-            // Add any cleanup steps here
+            // Add cleanup steps here
+        }
+        success {
+            echo 'Pipeline succeeded!'
+        }
+        failure {
+            echo 'Pipeline failed!'
         }
     }
 }
