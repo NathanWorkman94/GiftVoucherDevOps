@@ -25,7 +25,9 @@ pipeline {
                     def hostPath = "C:/Users/natha/Documents/Deakin/Trimester 2/SIT223 - Professional Practice in Information Technology/6.2HD Create your DevOps Pipeline/Output"
                     
                     // Copy the file from the container to the host machine
-                    bat "docker cp giftvoucher_test:${containerPath}/Mannys Gift Voucher - 1234567 $100.png ${hostPath}"
+                    def fileName = "Mannys Gift Voucher - 1234567 \$100.png"
+                    def escapedFileName = fileName.replace('$', '\\$')
+                    bat "docker cp giftvoucher_test:${containerPath}/${escapedFileName} ${hostPath}"
                 }
             }
         }
