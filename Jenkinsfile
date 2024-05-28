@@ -12,7 +12,7 @@ pipeline {
         stage('Test') {
             steps {
                 echo 'Testing...'
-                sh 'docker run --name giftvoucher_test giftvoucher:latest'
+                sh 'docker run --name giftvoucher_test -d giftvoucher:latest'
             }
         }
         
