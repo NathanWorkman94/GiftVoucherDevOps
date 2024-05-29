@@ -1,0 +1,6 @@
+projectKey=giftvoucher_project
+serverUrl=http://localhost:9000
+serverVersion=10.5.1.90531
+dashboardUrl=http://localhost:9000/dashboard?id=giftvoucher_project
+ceTaskId=5cf6cf62-4e25-421d-8363-8eb2529150b1
+ceTaskUrl=http://localhost:9000/api/ce/task?id=5cf6cf62-4e25-421d-8363-8eb2529150b1
