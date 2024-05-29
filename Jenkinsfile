@@ -34,6 +34,13 @@ pipeline {
                 }
             }
         }
+
+        stage('Deploy') {
+            steps {
+                echo 'Deploying application with Docker Compose...'
+                bat 'docker-compose up -d'
+            }
+        }
         
         stage('Copy Output') {
             steps {
@@ -53,6 +60,7 @@ pipeline {
         stage('Cleanup') {
             steps {
                 echo 'Cleaning up...'
+                bat 'docker-compose down'
                 bat 'docker rm -f giftvoucher_test'
             }
         }
