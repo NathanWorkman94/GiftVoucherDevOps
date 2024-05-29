@@ -23,7 +23,10 @@ pipeline {
             steps {
                 echo 'Testing code quality with SonarQube Analysis'
                 withSonarQubeEnv('SonarQube') {
-                    bat 'sonar-scanner -Dsonar.projectKey=giftvoucher_project -Dsonar.sources=./ -Dsonar.host.url=http://localhost:9000 -Dsonar.login=squ_8f4782cb397cf42f2dbdcf0eeb83cd5bb1e31431'
+                    script {
+                        def scannerHome = tool 'SonarQube Scanner'
+                        bat "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=giftvoucher_project -Dsonar.sources=./ -Dsonar.host.url=http://localhost:9000 -Dsonar.login=${env.SONARQUBE_TOKEN}"
+                    }
                 }
             }
         }
