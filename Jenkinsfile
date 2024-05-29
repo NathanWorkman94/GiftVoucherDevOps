@@ -19,10 +19,11 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {
+        stage('Code Quality Analysis') {
             steps {
+                echo 'Testing code quality with SonarQube Analysis'
                 withSonarQubeEnv('SonarQube') {
-                    bat 'sonar-scanner -Dsonar.projectKey=giftvoucher -Dsonar.sources=./ -Dsonar.host.url=http://localhost:9000 -Dsonar.login=${env.SONARQUBE_TOKEN}'
+                    bat 'sonar-scanner -Dsonar.projectKey=giftvoucher -Dsonar.sources=./ -Dsonar.host.url=http://localhost:9000 -Dsonar.login=squ_8f4782cb397cf42f2dbdcf0eeb83cd5bb1e31431'
                 }
             }
         }
