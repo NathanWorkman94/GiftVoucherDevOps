@@ -18,6 +18,14 @@ pipeline {
                 bat 'docker run --name giftvoucher_test giftvoucher:latest'
             }
         }
+
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    bat 'sonar-scanner -Dsonar.projectKey=giftvoucher -Dsonar.sources=./ -Dsonar.host.url=http://localhost:9000 -Dsonar.login=${env.SONARQUBE_TOKEN}'
+                }
+            }
+        }
         
         stage('Copy Output') {
             steps {
