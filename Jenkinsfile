@@ -1,6 +1,10 @@
 pipeline {
     agent any
     
+    environment {
+        SONARQUBE_TOKEN = credentials('SONARQUBE_TOKEN')
+    }
+
     stages {
         stage('Build') {
             steps {
@@ -25,7 +29,7 @@ pipeline {
                 withSonarQubeEnv('SonarQube') {
                     script {
                         def scannerHome = tool 'SonarQube Scanner'
-                        bat "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=giftvoucher_project -Dsonar.sources=./ -Dsonar.host.url=http://localhost:9000 -Dsonar.login=${env.SONARQUBE_TOKEN}"
+                        bat "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=giftvoucher_project -Dsonar.sources=./ -Dsonar.host.url=http://localhost:9000 -Dsonar.login=${SONARQUBE_TOKEN}"
                     }
                 }
             }
